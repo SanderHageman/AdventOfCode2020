@@ -1,32 +1,50 @@
 pub fn day(input: String) {
-    let mut result1 = 0;
-    let mut result2 = 0;
-
     let input_num = input
         .lines()
         .map(|x| x.parse::<i32>().unwrap())
         .collect::<Vec<_>>();
 
-    'outer1: for (ix, x) in input_num.iter().enumerate() {
+    println!("Day 1 Result1: {:?}", part_1(&input_num));
+    println!("Day 1 Result2: {:?}", part_2(&input_num));
+}
+
+fn part_1(input_num: &Vec<i32>) -> i32 {
+    for (ix, x) in input_num.iter().enumerate() {
         for (iy, y) in input_num.iter().enumerate() {
             if ix != iy && x + y == 2020 {
-                result1 = x * y;
-                break 'outer1;
+                return x * y;
             };
         }
     }
 
-    'outer2: for (ix, x) in input_num.iter().enumerate() {
+    panic!("Unable to find answer")
+}
+
+fn part_2(input_num: &Vec<i32>) -> i32 {
+    for (ix, x) in input_num.iter().enumerate() {
         for (iy, y) in input_num.iter().enumerate() {
             for (iz, z) in input_num.iter().enumerate() {
                 if ix != iy && ix != iz && iy != iz && x + y + z == 2020 {
-                    result2 = x * y * z;
-                    break 'outer2;
+                    return x * y * z;
                 };
             }
         }
     }
 
-    println!("Day 1 Result1: {:?}", result1);
-    println!("Day 1 Result2: {:?}", result2);
+    panic!("Unable to find answer")
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_example_1() {
+        assert!(part_1(&vec![1721, 979, 366, 299, 675, 1456]) == 514579)
+    }
+
+    #[test]
+    fn test_example_2() {
+        assert!(part_2(&vec![1721, 979, 366, 299, 675, 1456]) == 241861950)
+    }
 }
