@@ -7,19 +7,19 @@ pub fn day(input: String) {
         .map(|x| x.parse::<i32>().unwrap())
         .collect::<Vec<_>>();
 
-    'outer1: for x in inputNum.iter() {
-        for y in inputNum.iter() {
-            if x + y == 2020 {
+    'outer1: for (ix, x) in inputNum.iter().enumerate() {
+        for (iy, y) in inputNum.iter().enumerate() {
+            if ix != iy && x + y == 2020 {
                 result1 = x * y;
                 break 'outer1;
             };
         }
     }
 
-    'outer2: for x in inputNum.iter() {
-        for y in inputNum.iter() {
-            for z in inputNum.iter() {
-                if x + y + z == 2020 {
+    'outer2: for (ix, x) in inputNum.iter().enumerate() {
+        for (iy, y) in inputNum.iter().enumerate() {
+            for (iz, z) in inputNum.iter().enumerate() {
+                if ix != iy && ix != iz && iy != iz && x + y + z == 2020 {
                     result2 = x * y * z;
                     break 'outer2;
                 };
