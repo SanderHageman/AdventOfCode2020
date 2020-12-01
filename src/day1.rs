@@ -10,8 +10,8 @@ pub fn day(input: String) {
 
 fn part_1(input_num: &Vec<i32>) -> i32 {
     for (ix, x) in input_num.iter().enumerate() {
-        for (iy, y) in input_num.iter().enumerate() {
-            if ix != iy && x + y == 2020 {
+        for y in input_num[ix + 1..].iter() {
+            if x + y == 2020 {
                 return x * y;
             };
         }
@@ -22,9 +22,9 @@ fn part_1(input_num: &Vec<i32>) -> i32 {
 
 fn part_2(input_num: &Vec<i32>) -> i32 {
     for (ix, x) in input_num.iter().enumerate() {
-        for (iy, y) in input_num.iter().enumerate() {
-            for (iz, z) in input_num.iter().enumerate() {
-                if ix != iy && ix != iz && iy != iz && x + y + z == 2020 {
+        for (iy, y) in input_num[ix + 1..].iter().enumerate() {
+            for z in input_num[iy + 1..].iter() {
+                if x + y + z == 2020 {
                     return x * y * z;
                 };
             }
