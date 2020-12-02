@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 ureq = "1.5.2"
+regex = "1.4.2"
+lazy_static = "1.4.0"
