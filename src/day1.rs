@@ -1,11 +1,8 @@
 pub fn day(input: String) {
-    let input_num = input
-        .lines()
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect::<Vec<_>>();
+    let parsed_input = parse(&input);
 
-    println!("Day 1 Result1: {:?}", part_1(&input_num));
-    println!("Day 1 Result2: {:?}", part_2(&input_num));
+    println!("Day 1 Result1: {:?}", part_1(&parsed_input));
+    println!("Day 1 Result2: {:?}", part_2(&parsed_input));
 }
 
 fn part_1(input_num: &Vec<i32>) -> i32 {
@@ -34,17 +31,27 @@ fn part_2(input_num: &Vec<i32>) -> i32 {
     panic!("Unable to find answer")
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_example_1() {
-        assert!(part_1(&vec![1721, 979, 366, 299, 675, 1456]) == 514579)
-    }
-
-    #[test]
-    fn test_example_2() {
-        assert!(part_2(&vec![1721, 979, 366, 299, 675, 1456]) == 241861950)
-    }
+fn parse(input: &str) -> Vec<i32> {
+    input.lines().map(|x| x.parse::<i32>().unwrap()).collect()
 }
+
+#[test]
+fn test_example_1() {
+    let input = parse(EXAMPLE_INPUT);
+    assert!(part_1(&input) == 514579)
+}
+
+#[test]
+fn test_example_2() {
+    let input = parse(EXAMPLE_INPUT);
+    assert!(part_2(&input) == 241861950)
+}
+
+#[cfg(test)]
+const EXAMPLE_INPUT: &str = "\
+1721
+979
+366
+299
+675
+1456";

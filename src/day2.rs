@@ -1,5 +1,5 @@
 pub fn day(input: String) {
-    let parsed_input = parse(input);
+    let parsed_input = parse(&input);
 
     println!("Day 2 Result1: {:?}", part_1(&parsed_input));
     println!("Day 2 Result2: {:?}", part_2(&parsed_input));
@@ -13,8 +13,8 @@ fn part_2(passes: &Vec<Pass>) -> usize {
     passes.iter().filter(|i| i.is_correct_format2()).count()
 }
 
-fn parse(input: String) -> Vec<Pass> {
-    input.lines().map(|l| Pass::from(l)).collect()
+fn parse(input: &str) -> Vec<Pass> {
+    input.lines().map(|line| Pass::from(line)).collect()
 }
 
 #[derive(Debug)]
@@ -56,19 +56,20 @@ impl From<&str> for Pass {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_example_1() {
-        let input = parse("1-3 a: abcde\r\n1-3 b: cdefg\r\n2-9 c: ccccccccc".to_owned());
-        assert!(part_1(&input) == 2)
-    }
-
-    #[test]
-    fn test_example_2() {
-        let input = parse("1-3 a: abcde\r\n1-3 b: cdefg\r\n2-9 c: ccccccccc".to_owned());
-        assert!(part_2(&input) == 1)
-    }
+#[test]
+fn test_example_1() {
+    let input = parse(EXAMPLE_INPUT);
+    assert!(part_1(&input) == 2)
 }
+
+#[test]
+fn test_example_2() {
+    let input = parse(EXAMPLE_INPUT);
+    assert!(part_2(&input) == 1)
+}
+
+#[cfg(test)]
+const EXAMPLE_INPUT: &str = "\
+1-3 a: abcde
+1-3 b: cdefg
+2-9 c: ccccccccc";
