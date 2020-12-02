@@ -1,26 +1,23 @@
+use core::panic;
 use std::{fs, io::Result};
 
 pub fn get_input(day: usize, year: usize) -> String {
     let file_path = format!("input/day{}", day);
+    let file_content = fs::read_to_string(&file_path);
 
-    let file_string = fs::read_to_string(file_path.clone());
-
-    let result: String;
-
-    if file_string.is_err() {
-        let online = get_online_input(day, year);
-        if let Ok(online_result) = online {
+    {
+        file_content.unwrap_or_else(|_| {
             println!("Fetching input for {}/{} online", day, year);
-            fs::write(file_path.clone(), online_result.clone()).expect("Unable to write to cache");
-            result = online_result;
-        } else {
-            result = String::new();
-        }
-    } else {
-        result = file_string.unwrap();
+            if let Ok(online_result) = get_online_input(day, year) {
+                fs::write(&file_path, &online_result).expect("Unable to write to cache");
+                online_result
+            } else {
+                panic!("Unable to fetch input for {}/{}", day, year);
+            }
+        })
     }
-
-    result.trim().to_owned()
+    .trim()
+    .to_owned()
 }
 
 fn get_online_input(day: usize, year: usize) -> Result<String> {
