@@ -14,13 +14,7 @@ fn part_2(passes: &Vec<Pass>) -> usize {
 }
 
 fn parse(input: String) -> Vec<Pass> {
-    let mut result_vec = Vec::new();
-
-    for line in input.lines() {
-        result_vec.push(Pass::from(line));
-    }
-
-    result_vec
+    input.lines().map(|l| Pass::from(l)).collect()
 }
 
 #[derive(Debug)]
