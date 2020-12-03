@@ -1,6 +1,19 @@
 use core::panic;
 use std::{fs, io::Result};
 
+#[macro_export]
+macro_rules! main {
+    ($($day:ident $val:expr)+) => {
+        $(mod $day;)+
+
+        pub fn main() {
+            $(
+                $day::day(util::get_input($val, 2020));
+            )+
+        }
+    };
+}
+
 pub fn get_input(day: usize, year: usize) -> String {
     let file_path = format!("input/day{}", day);
     let file_content = fs::read_to_string(&file_path);
