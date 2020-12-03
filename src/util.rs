@@ -3,13 +3,14 @@ use std::{fs, io::Result};
 
 #[macro_export]
 macro_rules! main {
-    ($($day:ident $val:expr)+) => {
-        $(mod $day;)+
-
-        pub fn main() {
-            $(
-                $day::day(util::get_input($val, 2020));
-            )+
+    ($(day $val:expr)+) => {
+        paste::paste!{
+            $(mod [<day $val>];)+
+            pub fn main() {
+                $(
+                    [<day $val>]::day(util::get_input($val, 2020));
+                )+
+            }
         }
     };
 }
