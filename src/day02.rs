@@ -32,7 +32,7 @@ impl Pass {
     fn is_correct_format2(&self) -> bool {
         let l = self.password.chars().nth(self.low_lim - 1).unwrap_or('@');
         let h = self.password.chars().nth(self.high_lim - 1).unwrap_or('@');
-        (l == self.char || h == self.char) && l != h
+        (l == self.char) != (h == self.char)
     }
 }
 
