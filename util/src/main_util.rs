@@ -1,4 +1,3 @@
-use core::panic;
 use std::{fs, io::Result};
 
 #[macro_export]
@@ -17,18 +16,15 @@ macro_rules! main {
 }
 
 pub fn get_input(day: usize, year: usize) -> String {
-    let file_path = format!("input/day{}", day);
+    let file_path = format!("input/day{:02}", day);
     let file_content = fs::read_to_string(&file_path);
 
     {
         file_content.unwrap_or_else(|_| {
             println!("Fetching input for {}/{} online", day, year);
-            if let Ok(online_result) = get_online_input(day, year) {
-                fs::write(&file_path, &online_result).expect("Unable to write to cache");
-                online_result
-            } else {
-                panic!("Unable to fetch input for {}/{}", day, year);
-            }
+            let result = get_online_input(day, year).expect("Unable to fetch input");
+            fs::write(&file_path, &result).expect("Unable to write to cache");
+            result
         })
     }
     .trim()
