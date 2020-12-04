@@ -1,8 +1,6 @@
-pub fn day(input: String) {
+pub fn day(input: String) -> (usize, usize) {
     let parsed_input = parse(&input);
-
-    println!("Day 2 Result1: {:?}", part_1(&parsed_input));
-    println!("Day 2 Result2: {:?}", part_2(&parsed_input));
+    (part_1(&parsed_input), part_2(&parsed_input))
 }
 
 fn part_1(passes: &Vec<Pass>) -> usize {

@@ -3,11 +3,9 @@ use std::collections::HashMap;
 type TParsedVal<'a> = HashMap<&'a str, &'a str>;
 type TParsed<'a> = Vec<TParsedVal<'a>>;
 
-pub fn day(input: String) {
+pub fn day(input: String) -> (i64, i64) {
     let parsed_input = parse(&input);
-
-    println!("Day 4 Result1: {:?}", part_1(&parsed_input));
-    println!("Day 4 Result2: {:?}", part_2(&parsed_input));
+    (part_1(&parsed_input), part_2(&parsed_input))
 }
 
 fn part_1(input: &TParsed) -> i64 {

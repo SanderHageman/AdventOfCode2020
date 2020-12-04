@@ -1,10 +1,8 @@
 type TParsed = Vec<Vec<bool>>;
 
-pub fn day(input: String) {
+pub fn day(input: String) -> (i64, i64) {
     let parsed_input = parse(&input);
-
-    println!("Day 3 Result1: {:?}", part_1(&parsed_input));
-    println!("Day 3 Result2: {:?}", part_2(&parsed_input));
+    (part_1(&parsed_input), part_2(&parsed_input))
 }
 
 fn part_1(input: &TParsed) -> i64 {

@@ -8,7 +8,8 @@ macro_rules! main {
             $(mod [<day $val>];)+
             pub fn main() {
                 $(
-                    [<day $val>]::day(main_util::get_input($val, 2020));
+                    let result = [<day $val>]::day(main_util::get_input($val, 2020));
+                    println!("Result day {}: {:?}\t{:?}", $val, result.0, result.1);
                 )+
             }
         }

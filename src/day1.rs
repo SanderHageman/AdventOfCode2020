@@ -1,8 +1,6 @@
-pub fn day(input: String) {
+pub fn day(input: String) -> (i32, i32) {
     let parsed_input = parse(&input);
-
-    println!("Day 1 Result1: {:?}", part_1(&parsed_input));
-    println!("Day 1 Result2: {:?}", part_2(&parsed_input));
+    (part_1(&parsed_input), part_2(&parsed_input))
 }
 
 fn part_1(input_num: &Vec<i32>) -> i32 {
