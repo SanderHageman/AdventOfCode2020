@@ -6,10 +6,18 @@ macro_rules! main {
         paste!{
             $(mod [<day $val>];)+
             pub fn main() {
+                let start = std::time::Instant::now();
+
                 $(
+                    let start_local = std::time::Instant::now();
                     let result = [<day $val>]::day(main_util::get_input($val, 2020));
-                    println!("Result day {}: {:?}\t{:?}", $val, result.0, result.1);
+                    let end_local = std::time::Instant::now();
+                    let time = end_local.duration_since(start_local).as_millis();
+                    println!("Result day {:02} ({:03}ms): \t{:?}\t{:?}", $val, time, result.0, result.1);
                 )+
+
+                let end = std::time::Instant::now();
+                println!("Execution took {}ms", end.duration_since(start).as_millis());
             }
         }
     };
