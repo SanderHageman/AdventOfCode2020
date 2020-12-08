@@ -22,38 +22,26 @@ fn part_1(input: &TParsed) -> i64 {
 }
 
 fn part_2(input: &TParsed) -> i64 {
-    let mut changed_i = usize::MAX;
+    'outer: for (i, ins) in input.iter().enumerate() {
+        let instruction = match ins {
+            cpu::Instruction::Acc(_) => continue,
+            cpu::Instruction::Jmp(cnt) => cpu::Instruction::Nop(*cnt),
+            cpu::Instruction::Nop(cnt) => cpu::Instruction::Jmp(*cnt),
+        };
 
-    for _ in 0..input.len() {
-        let mut a = input.clone();
-        for (i, ins) in input.iter().enumerate() {
-            if changed_i != usize::MAX && i <= changed_i {
-                continue;
-            }
+        let mut input_clone = input.clone();
+        input_clone[i] = instruction;
 
-            changed_i = i;
-            a[i] = match ins {
-                cpu::Instruction::Acc(_) => continue,
-                cpu::Instruction::Jmp(cnt) => cpu::Instruction::Nop(*cnt),
-                cpu::Instruction::Nop(cnt) => cpu::Instruction::Jmp(*cnt),
-            };
-
-            break;
-        }
-
-        let mut cpu = cpu::CPU::new_owned(a);
+        let mut cpu = cpu::CPU::new_owned(input_clone);
         let mut set = HashSet::new();
 
-        loop {
-            let pos = cpu.next();
+        while let Some(pos) = cpu.next() {
             if !set.insert(pos) {
-                break;
-            }
-
-            if pos.is_none() {
-                return cpu.get_acc_value();
+                continue 'outer;
             }
         }
+
+        return cpu.get_acc_value();
     }
 
     panic!("Unable to find answer")
@@ -66,7 +54,7 @@ fn parse(input: &str) -> TParsed {
 #[test]
 fn show_parse() {
     let input = parse(EXAMPLE_INPUT);
-    dbg!(input);
+    println!("{:?}", input);
 }
 
 #[test]
