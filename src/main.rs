@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 pub use util::*;
+mod cpu;
 
 util::main! {
     day 01
@@ -10,4 +11,5 @@ util::main! {
     day 05
     day 06
     day 07
+    day 08
 }
