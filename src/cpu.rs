@@ -1,23 +1,19 @@
 impl CPU {
     pub fn new(input: &Vec<Instruction>) -> Self {
-        Self {
-            pos: 0,
-            acc: 0,
-            input: input.clone(),
-        }
+        Self::new_owned(input.clone())
     }
 
     pub fn new_owned(input: Vec<Instruction>) -> Self {
         Self {
             pos: 0,
             acc: 0,
-            input: input,
+            input,
         }
     }
 
     pub fn next(&mut self) -> Option<usize> {
         if self.pos as usize >= self.input.len() {
-            return None;
+            return None; // finished execution
         }
 
         self.pos += match self.input[self.pos as usize] {
@@ -35,19 +31,6 @@ impl CPU {
     pub fn get_acc_value(&self) -> i64 {
         self.acc
     }
-}
-#[derive(Debug)]
-pub struct CPU {
-    pos: i64,
-    acc: i64,
-    input: Vec<Instruction>,
-}
-
-#[derive(Debug, Copy, Clone)]
-pub enum Instruction {
-    Acc(i64),
-    Jmp(i64),
-    Nop(i64),
 }
 
 impl From<&str> for Instruction {
@@ -70,4 +53,18 @@ impl From<&str> for Instruction {
             _ => panic!("Uncovered op {}", ins),
         }
     }
+}
+
+#[derive(Debug)]
+pub struct CPU {
+    pos: i64,
+    acc: i64,
+    input: Vec<Instruction>,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum Instruction {
+    Acc(i64),
+    Jmp(i64),
+    Nop(i64),
 }
