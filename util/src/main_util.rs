@@ -13,7 +13,7 @@ macro_rules! main {
                     let result = [<day $val>]::day(main_util::get_input($val, 2020));
                     let end_local = std::time::Instant::now();
                     let time = end_local.duration_since(start_local).as_millis();
-                    println!("Result day {:02} ({:03}ms): \t{:?}\t{:?}", $val, time, result.0, result.1);
+                    println!("Result day {:02} ({:03}ms): \t{:<10} | {:<10}", $val, time, result.0, result.1);
                 )+
 
                 let end = std::time::Instant::now();
