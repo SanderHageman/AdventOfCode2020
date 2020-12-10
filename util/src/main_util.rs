@@ -8,12 +8,13 @@ macro_rules! main {
             pub fn main() {
                 let start = std::time::Instant::now();
 
+                main_util::print_entry();
+
                 $(
                     let start_local = std::time::Instant::now();
                     let result = [<day $val>]::day(main_util::get_input($val, 2020));
                     let end_local = std::time::Instant::now();
-                    let time = end_local.duration_since(start_local).as_millis();
-                    println!("Result day {:02} ({:03}ms): \t{:<10} | {:<10}", $val, time, result.0, result.1);
+                    main_util::print_result($val, result, end_local.duration_since(start_local).as_millis());
                 )+
 
                 let end = std::time::Instant::now();
@@ -21,6 +22,37 @@ macro_rules! main {
             }
         }
     };
+}
+
+pub fn print_entry() {
+    use colored::Colorize;
+    println!(
+        // Thanks Caspar
+        "{} {} {} {}",
+        "Advent".bright_red().bold(),
+        "of".bright_white(),
+        "Code".bright_green().bold(),
+        "2020".bright_blue()
+    );
+}
+
+pub fn print_result<T, T2>(day: usize, result: (T, T2), time: u128)
+where
+    T: std::fmt::Display,
+    T2: std::fmt::Display,
+{
+    use colored::Colorize;
+    let a = format!("{:02}", day);
+    let b = format!("{:03}ms", time);
+    let c = format!("{:<10}", result.0);
+    let d = format!("{:<10}", result.1);
+    println!(
+        "Result day {} ({}):\t{} | {}",
+        a.bright_blue(),
+        b.bright_red(),
+        c.bright_green(),
+        d.bright_green(),
+    );
 }
 
 pub fn get_input(day: usize, year: usize) -> String {
