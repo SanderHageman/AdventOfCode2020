@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::{fs, io::Result};
 
 #[macro_export]
@@ -25,10 +26,9 @@ macro_rules! main {
 }
 
 pub fn print_entry() {
-    use colored::Colorize;
     println!(
         // Thanks Caspar
-        "{} {} {} {}",
+        "\t{} {} {} {}",
         "Advent".bright_red().bold(),
         "of".bright_white(),
         "Code".bright_green().bold(),
@@ -41,17 +41,18 @@ where
     T: std::fmt::Display,
     T2: std::fmt::Display,
 {
-    use colored::Colorize;
-    let a = format!("{:02}", day);
-    let b = format!("{:03}ms", time);
-    let c = format!("{:<10}", result.0);
-    let d = format!("{:<10}", result.1);
+    let resd = "Result ";
+    let day = format!("day {:02}", day);
+    let time = format!("{:04}ms", time);
+    let res1 = format!("{:<10}", result.0);
+    let res2 = format!("{:<10}", result.1);
     println!(
-        "Result day {} ({}):\t{} | {}",
-        a.bright_blue(),
-        b.bright_red(),
-        c.bright_green(),
-        d.bright_green(),
+        "{}{} ({}):\t{} | {}",
+        resd.green(),
+        day.bright_blue(),
+        time.dimmed(),
+        res1,
+        res2,
     );
 }
 
