@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate lazy_static;
-extern crate nalgebra_glm as glm;
 
 pub use util::*;
 mod cpu;

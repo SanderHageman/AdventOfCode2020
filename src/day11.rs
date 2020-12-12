@@ -1,11 +1,11 @@
-use std::ops::{Add, AddAssign};
+use vek::Vec2;
 
 type TParsed = Vec<TParsedSub>;
 type TParsedSub = Vec<Seat>;
 
 pub fn day(input: String) -> (usize, usize) {
     let parsed_input = parse(&input);
-    if false {
+    if true {
         (part_1(&parsed_input), part_2(&parsed_input))
     } else {
         // Hardcoded because this day takes too long
@@ -57,7 +57,7 @@ impl Seat {
         }
     }
 
-    fn get(map: &TParsed, pos: Vec2) -> Option<State> {
+    fn get(map: &TParsed, pos: Vec2<i32>) -> Option<State> {
         if (pos.x as usize) < map[0].len() && (pos.y as usize) < map.len() {
             Some(map[pos.y as usize][pos.x as usize].state)
         } else {
@@ -113,7 +113,10 @@ impl Seat {
         false
     }
 
-    fn get_neighbours() -> [Vec2; 8] {
+    fn get_neighbours() -> [Vec2<i32>; 8] {
+        fn vec2(x: i32, y: i32) -> Vec2<i32> {
+            Vec2 { x, y }
+        }
         [
             vec2(-1, -1),
             vec2(0, -1),
@@ -136,7 +139,7 @@ fn count_occupied(map: &TParsed) -> usize {
 #[derive(Debug, Copy, Clone)]
 struct Seat {
     state: State,
-    pos: Vec2,
+    pos: Vec2<i32>,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -157,43 +160,13 @@ fn parse(input: &str) -> TParsed {
                     '.' => State::Floor,
                     _ => panic!("Uncovered"),
                 },
-                pos: vec2(x as i32, y as i32),
+                pos: Vec2::new(x as i32, y as i32),
             });
         }
         result.push(row);
     }
 
     result
-}
-
-#[derive(Debug, Copy, Clone)]
-struct Vec2 {
-    x: i32,
-    y: i32,
-}
-
-impl Add for Vec2 {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
-    }
-}
-
-impl AddAssign for Vec2 {
-    fn add_assign(&mut self, other: Self) {
-        *self = Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        };
-    }
-}
-
-fn vec2(x: i32, y: i32) -> Vec2 {
-    Vec2 { x, y }
 }
 
 #[test]

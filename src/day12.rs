@@ -1,4 +1,5 @@
-use glm::*;
+//use glm::*;
+use vek::Vec2;
 
 type TParsed = Vec<TParsedSub>;
 type TParsedSub = Instruction;
@@ -9,8 +10,8 @@ pub fn day(input: String) -> (usize, usize) {
 }
 
 fn part_1(input: &TParsed) -> usize {
-    let mut forward = vec2(1f32, 0f32);
-    let mut pos = vec2(0f32, 0f32);
+    let mut forward = Vec2::new(1f32, 0f32);
+    let mut pos = Vec2::new(0f32, 0f32);
 
     for i in input {
         match i.ins {
@@ -24,12 +25,12 @@ fn part_1(input: &TParsed) -> usize {
         }
     }
 
-    pos.abs().sum() as usize
+    pos.map(|x| x.abs()).sum() as usize
 }
 
 fn part_2(input: &TParsed) -> usize {
-    let mut pos = vec2(0f32, 0f32);
-    let mut waypoint_pos = vec2(10f32, 1f32);
+    let mut pos = Vec2::new(0f32, 0f32);
+    let mut waypoint_pos = Vec2::new(10f32, 1f32);
 
     for i in input {
         match i.ins {
@@ -43,19 +44,19 @@ fn part_2(input: &TParsed) -> usize {
         }
     }
 
-    pos.abs().sum() as usize
+    pos.map(|x| x.abs()).sum() as usize
 }
 
-fn rotate(ins: &Instruction, mut vec: Vec2) -> Vec2 {
+fn rotate(ins: &Instruction, mut vec: Vec2<f32>) -> Vec2<f32> {
     let sign = if ins.ins == 'L' {
-        vec2(-1f32, 1f32)
+        Vec2::new(-1f32, 1f32)
     } else {
-        vec2(1f32, -1f32)
+        Vec2::new(1f32, -1f32)
     };
 
     for _ in 0..(ins.val / 90f32).round() as usize {
-        vec.swap_rows(0, 1);
-        vec.component_mul_assign(&sign);
+        vec.swap(0, 1);
+        vec *= sign;
     }
 
     vec
