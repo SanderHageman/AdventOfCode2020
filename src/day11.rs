@@ -1,4 +1,4 @@
-use cgmath::{vec2, Vector2};
+use std::ops::{Add, AddAssign};
 
 type TParsed = Vec<TParsedSub>;
 type TParsedSub = Vec<Seat>;
@@ -57,7 +57,7 @@ impl Seat {
         }
     }
 
-    fn get(map: &TParsed, pos: Vector2<i32>) -> Option<State> {
+    fn get(map: &TParsed, pos: Vec2) -> Option<State> {
         if (pos.x as usize) < map[0].len() && (pos.y as usize) < map.len() {
             Some(map[pos.y as usize][pos.x as usize].state)
         } else {
@@ -67,7 +67,7 @@ impl Seat {
 
     fn should_empty_change(&self, map: &TParsed, pt1: bool) -> bool {
         for nb in Seat::get_neighbours().iter() {
-            let mut pos = self.pos + nb;
+            let mut pos = self.pos + *nb;
             while let Some(state) = Seat::get(map, pos) {
                 pos += *nb;
                 match state {
@@ -89,7 +89,7 @@ impl Seat {
         let mut counter = 0;
         let target = if pt1 { 4 } else { 5 };
         for nb in Seat::get_neighbours().iter() {
-            let mut pos = self.pos + nb;
+            let mut pos = self.pos + *nb;
             while let Some(state) = Seat::get(map, pos) {
                 pos += *nb;
                 match state {
@@ -113,7 +113,7 @@ impl Seat {
         false
     }
 
-    fn get_neighbours() -> [Vector2<i32>; 8] {
+    fn get_neighbours() -> [Vec2; 8] {
         [
             vec2(-1, -1),
             vec2(0, -1),
@@ -128,22 +128,15 @@ impl Seat {
 }
 
 fn count_occupied(map: &TParsed) -> usize {
-    let mut cnt = 0;
-    for i in map {
-        for j in i {
-            if j.state == State::Occupied {
-                cnt += 1;
-            }
-        }
-    }
-
-    cnt
+    map.iter()
+        .map(|v| v.iter().filter(|s| s.state == State::Occupied).count())
+        .sum()
 }
 
 #[derive(Debug, Copy, Clone)]
 struct Seat {
     state: State,
-    pos: Vector2<i32>,
+    pos: Vec2,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -171,6 +164,36 @@ fn parse(input: &str) -> TParsed {
     }
 
     result
+}
+
+#[derive(Debug, Copy, Clone)]
+struct Vec2 {
+    x: i32,
+    y: i32,
+}
+
+impl Add for Vec2 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+impl AddAssign for Vec2 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
+fn vec2(x: i32, y: i32) -> Vec2 {
+    Vec2 { x, y }
 }
 
 #[test]
