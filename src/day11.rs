@@ -5,7 +5,7 @@ type TParsedSub = Vec<Seat>;
 
 pub fn day(input: String) -> (usize, usize) {
     let parsed_input = parse(&input);
-    if true {
+    if false {
         (part_1(&parsed_input), part_2(&parsed_input))
     } else {
         // Hardcoded because this day takes too long

@@ -1,4 +1,3 @@
-//use glm::*;
 use vek::Vec2;
 
 type TParsed = Vec<TParsedSub>;
