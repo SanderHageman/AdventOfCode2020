@@ -12,8 +12,9 @@ macro_rules! main {
                 main_util::print_entry();
 
                 $(
+                    let input = main_util::get_input($val, 2020);
                     let start_local = std::time::Instant::now();
-                    let result = [<day $val>]::day(main_util::get_input($val, 2020));
+                    let result = [<day $val>]::day(input);
                     let end_local = std::time::Instant::now();
                     main_util::print_result($val, result, end_local.duration_since(start_local).as_millis());
                 )+
