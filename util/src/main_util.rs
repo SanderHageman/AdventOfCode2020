@@ -45,7 +45,7 @@ where
     let resd = "Result ";
     let day = format!("day {:02}", day);
     let time = format!("{:04}ms", time);
-    let res1 = format!("{:<10}", result.0);
+    let res1 = format!("{:<14}", result.0);
     let res2 = format!("{:<10}", result.1);
     println!(
         "{}{} ({}):\t{} | {}",
