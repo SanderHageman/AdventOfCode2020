@@ -22,7 +22,7 @@ fn get_nth(input: &TParsed, n: usize) -> usize {
         .enumerate()
         .for_each(|(i, val)| register[*val] = i + 1);
 
-    let mut previous_num = *input.last().unwrap() as usize;
+    let mut previous_num = *input.last().unwrap();
 
     for i in input.len()..n {
         let prev = register[previous_num];
