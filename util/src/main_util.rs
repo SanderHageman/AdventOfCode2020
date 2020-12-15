@@ -11,13 +11,12 @@ macro_rules! main {
 
                 main_util::print_entry();
 
-                let args = std::env::args().skip(1).map(|x| x.parse::<u8>().unwrap()).collect::<Vec<_>>();
-                let filter = if args.len() > 0 {
-                    println!("Running for days: {:?}", args);
-                    true
-                } else {
-                    false
-                };
+                let args = std::env::args()
+                    .skip(1)
+                    .map(|x| x.parse::<u8>().unwrap())
+                    .collect::<Vec<_>>();
+
+                let filter = if args.len() > 0 { true } else { false };
 
                 $(
                     if !filter || args.contains(&$val){
