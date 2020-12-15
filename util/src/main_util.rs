@@ -11,12 +11,22 @@ macro_rules! main {
 
                 main_util::print_entry();
 
+                let args = std::env::args().skip(1).map(|x| x.parse::<u8>().unwrap()).collect::<Vec<_>>();
+                let filter = if args.len() > 0 {
+                    println!("Running for days: {:?}", args);
+                    true
+                } else {
+                    false
+                };
+
                 $(
-                    let input = main_util::get_input($val, 2020);
-                    let start_local = std::time::Instant::now();
-                    let result = [<day $val>]::day(input);
-                    let end_local = std::time::Instant::now();
-                    main_util::print_result($val, result, end_local.duration_since(start_local).as_millis());
+                    if !filter || args.contains(&$val){
+                        let input = main_util::get_input($val, 2020);
+                        let start_local = std::time::Instant::now();
+                        let result = [<day $val>]::day(input);
+                        let end_local = std::time::Instant::now();
+                        main_util::print_result($val, result, end_local.duration_since(start_local).as_millis());
+                    }
                 )+
 
                 let end = std::time::Instant::now();

@@ -5,14 +5,8 @@ type TParsed = Vec<TParsedSub>;
 type TParsedSub = Instruction;
 
 pub fn day(input: String) -> (u64, u64) {
-    if false {
-        let parsed_input = parse(&input);
-        (part_1(&parsed_input), part_2(&parsed_input))
-    } else {
-        // Hardcoded because this day takes too long
-        // to compute for every future day
-        (17481577045893, 4160009892257)
-    }
+    let parsed_input = parse(&input);
+    (part_1(&parsed_input), part_2(&parsed_input))
 }
 
 fn part_1(input: &TParsed) -> u64 {
