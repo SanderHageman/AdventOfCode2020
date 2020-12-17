@@ -1,7 +1,7 @@
 type TParsed = (usize, TParsedSub);
 type TParsedSub = Vec<usize>;
 
-pub fn day(input: String) -> (usize, u64) {
+pub fn day(input: String) -> (usize, usize) {
     let parsed_input = parse(&input);
     (part_1(&parsed_input), part_2(&parsed_input))
 }
@@ -21,30 +21,37 @@ fn part_1((target, input): &TParsed) -> usize {
     min_wait * min_bus
 }
 
-fn part_2((_, _input): &TParsed) -> u64 {
-    // let mut i = 1;
-    // loop {
-    //     let x = 13 * i;
-    //     for j in 1..10000 {
-    //         let y = 7 * j;
-    //         if x - 1 == y {
-    //             for a in 1..10000 {
-    //                 let z = 59 * a;
+fn part_2((_, input): &TParsed) -> usize {
+    let mut nums = input
+        .iter()
+        .enumerate()
+        .filter(|(_, x)| *x > &0)
+        .map(|(i, x)| (*x, i))
+        .collect::<Vec<_>>();
 
-    //                 if z - y > 1 && z - y < 4 {
-    //                     panic!(
-    //                         "7 ({:?}/{:?})  13 ({:?}/{:?}) 59 ({:?}/{:?})",
-    //                         y, j, x, i, z, a
-    //                     );
-    //                 }
-    //             }
-    //         }
-    //     }
+    let (mut step, _) = nums.remove(0);
+    let nums = nums;
 
-    //     i += 1;
-    // }
+    let mut counter = 0;
 
-    0
+    'nums: for (num, offset) in nums {
+        let mut target = num as i64 - offset as i64;
+        while target < 0 {
+            target += num as i64;
+        }
+
+        let target = target as usize;
+
+        loop {
+            counter += step;
+            if counter % num == target {
+                step *= num;
+                continue 'nums;
+            };
+        }
+    }
+
+    counter
 }
 
 fn parse(input: &str) -> TParsed {
@@ -73,12 +80,12 @@ fn test_example_1() {
 
 #[test]
 fn test_example_2() {
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT)), 1068781);
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT2)), 3417);
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT3)), 754018);
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT4)), 779210);
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT5)), 1261476);
-    // assert_eq!(part_2(&parse(EXAMPLE_INPUT6)), 1202161486);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT)), 1068781);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT2)), 3417);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT3)), 754018);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT4)), 779210);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT5)), 1261476);
+    assert_eq!(part_2(&parse(EXAMPLE_INPUT6)), 1202161486);
 }
 
 #[cfg(test)]
