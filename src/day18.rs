@@ -49,7 +49,7 @@ where
     let mut result = 0;
     let mut modifier = None;
 
-    let mut apply_modifier = |n: i64, modifier: &Option<Expr>| match modifier {
+    let mut apply_modifier = |n: i64, modifier: Option<Expr>| match modifier {
         Some(Expr::Add) => result += n,
         Some(Expr::Mult) => result *= n,
         Some(_) => panic!("Uncovered modifier {:?}", modifier),
@@ -58,12 +58,16 @@ where
 
     for expr in scope {
         match expr {
-            Expr::N(n) => apply_modifier(*n, &modifier),
+            Expr::N(n) => {
+                apply_modifier(*n, modifier);
+                modifier = None;
+            }
             Expr::Add => modifier = Some(Expr::Add),
             Expr::Mult => modifier = Some(Expr::Mult),
             Expr::Scope(other_scope) => {
                 let scoped_result = fn_recurse(other_scope);
-                apply_modifier(scoped_result, &modifier);
+                apply_modifier(scoped_result, modifier);
+                modifier = None;
             }
             _ => panic!("Uncovered expression {:?}", expr),
         }
