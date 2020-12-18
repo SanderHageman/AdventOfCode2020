@@ -10,6 +10,7 @@ pub fn day(input: String) -> (usize, usize) {
 }
 
 fn part_1(input: &TParsed) -> usize {
+    let nbs = get_nbs();
     let mut grid = input.iter().cloned().collect::<HashMap<_, _>>();
 
     for _ in 0..6 {
@@ -18,27 +19,29 @@ fn part_1(input: &TParsed) -> usize {
         for (cube, cube_active) in &grid {
             let mut n_active_neighbours = 0;
 
-            for neighbour in get_neighbours(*cube) {
+            for nb in &nbs {
+                let neighbour = nb + cube;
                 if let Some(n) = grid.get(&neighbour) {
                     n_active_neighbours += if *n { 1 } else { 0 };
-                }
-
-                write_grid.entry(neighbour).or_insert_with(|| {
-                    let mut n_active = 0;
-                    for neighbour in get_neighbours(neighbour) {
-                        if let Some(n) = grid.get(&neighbour) {
-                            n_active += if *n { 1 } else { 0 };
+                } else {
+                    write_grid.entry(neighbour).or_insert_with(|| {
+                        let mut n_active = 0;
+                        for nb in &nbs {
+                            if let Some(n) = grid.get(&(nb + neighbour)) {
+                                n_active += if *n { 1 } else { 0 };
+                            }
                         }
-                    }
-                    n_active == 3
-                });
+                        n_active == 3
+                    });
+                }
             }
 
             if *cube_active {
+                n_active_neighbours -= 1;
                 let should = n_active_neighbours == 2 || n_active_neighbours == 3;
-                write_grid.entry(*cube).and_modify(|s| *s = should);
+                *write_grid.get_mut(cube).unwrap() = should;
             } else if !cube_active && n_active_neighbours == 3 {
-                write_grid.entry(*cube).and_modify(|s| *s = true);
+                *write_grid.get_mut(cube).unwrap() = true;
             }
         }
 
@@ -50,6 +53,7 @@ fn part_1(input: &TParsed) -> usize {
 }
 
 fn part_2(input: &TParsed) -> usize {
+    let nbs = get_nbs4();
     let mut grid = input
         .iter()
         .cloned()
@@ -59,34 +63,32 @@ fn part_2(input: &TParsed) -> usize {
     for _ in 0..6 {
         let mut write_grid = HashMap::from(grid.clone());
 
-        for (current_position, current_position_active) in &grid {
+        for (cube, cube_active) in &grid {
             let mut n_active_neighbours = 0;
 
-            for neighbour in get_neighbours4(*current_position) {
+            for nb in &nbs {
+                let neighbour = nb + cube;
                 if let Some(n) = grid.get(&neighbour) {
                     n_active_neighbours += if *n { 1 } else { 0 };
-                }
-
-                write_grid.entry(neighbour).or_insert_with(|| {
-                    let mut n_active = 0;
-                    for neighbour in get_neighbours4(neighbour) {
-                        if let Some(n) = grid.get(&neighbour) {
-                            n_active += if *n { 1 } else { 0 };
+                } else {
+                    write_grid.entry(neighbour).or_insert_with(|| {
+                        let mut n_active = 0;
+                        for nb in &nbs {
+                            if let Some(n) = grid.get(&(nb + neighbour)) {
+                                n_active += if *n { 1 } else { 0 };
+                            }
                         }
-                    }
-                    n_active == 3
-                });
+                        n_active == 3
+                    });
+                }
             }
 
-            if *current_position_active {
+            if *cube_active {
+                n_active_neighbours -= 1;
                 let should = n_active_neighbours == 2 || n_active_neighbours == 3;
-                write_grid
-                    .entry(*current_position)
-                    .and_modify(|s| *s = should);
-            } else if !current_position_active && n_active_neighbours == 3 {
-                write_grid
-                    .entry(*current_position)
-                    .and_modify(|s| *s = true);
+                *write_grid.get_mut(cube).unwrap() = should;
+            } else if !cube_active && n_active_neighbours == 3 {
+                *write_grid.get_mut(cube).unwrap() = true;
             }
         }
 
@@ -97,29 +99,7 @@ fn part_2(input: &TParsed) -> usize {
     grid.values().filter(|b| **b).count()
 }
 
-fn get_neighbours(pos: Vec3<isize>) -> Vec<Vec3<isize>> {
-    fn vec3(x: isize, y: isize, z: isize) -> Vec3<isize> {
-        Vec3 { x, y, z }
-    }
-
-    let mut result = vec![];
-
-    for x in -1..2 {
-        for y in -1..2 {
-            for z in -1..2 {
-                if x == 0 && y == 0 && z == 0 {
-                    continue;
-                }
-
-                result.push(pos + vec3(x, y, z));
-            }
-        }
-    }
-
-    result
-}
-
-fn get_neighbours4(pos: Vec4<isize>) -> Vec<Vec4<isize>> {
+fn get_nbs4() -> Vec<Vec4<isize>> {
     fn vec4(x: isize, y: isize, z: isize, w: isize) -> Vec4<isize> {
         Vec4 { x, y, z, w }
     }
@@ -130,12 +110,26 @@ fn get_neighbours4(pos: Vec4<isize>) -> Vec<Vec4<isize>> {
         for y in -1..2 {
             for z in -1..2 {
                 for w in -1..2 {
-                    if x == 0 && y == 0 && z == 0 && w == 0 {
-                        continue;
-                    }
-
-                    result.push(pos + vec4(x, y, z, w));
+                    result.push(vec4(x, y, z, w));
                 }
+            }
+        }
+    }
+
+    result
+}
+
+fn get_nbs() -> Vec<Vec3<isize>> {
+    fn vec3(x: isize, y: isize, z: isize) -> Vec3<isize> {
+        Vec3 { x, y, z }
+    }
+
+    let mut result = vec![];
+
+    for x in -1..2 {
+        for y in -1..2 {
+            for z in -1..2 {
+                result.push(vec3(x, y, z));
             }
         }
     }

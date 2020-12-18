@@ -1,5 +1,5 @@
 use colored::Colorize;
-use std::{fs, io::Result};
+use std::{fs, io::Result, time};
 
 #[macro_export]
 macro_rules! main {
@@ -7,36 +7,53 @@ macro_rules! main {
         paste!{
             $(mod [<day $val>];)+
             pub fn main() {
-                let start = std::time::Instant::now();
-
-                main_util::print_entry();
-
                 let args = std::env::args()
                     .skip(1)
                     .map(|x| x.parse::<u8>().unwrap())
                     .collect::<Vec<_>>();
-
                 let filter = if args.len() > 0 { true } else { false };
 
-                $(
-                    if !filter || args.contains(&$val){
-                        let input = main_util::get_input($val, 2020);
-                        let start_local = std::time::Instant::now();
-                        let result = [<day $val>]::day(input);
-                        let end_local = std::time::Instant::now();
-                        main_util::print_result($val, result, end_local.duration_since(start_local).as_millis());
-                    }
-                )+
+                main_util::print_entry(&args);
 
-                let end = std::time::Instant::now();
-                println!("Execution took {}ms", end.duration_since(start).as_millis());
+                let duration = main_util::time_duration(||{
+                    $(if !filter || args.contains(&$val){
+                            main_util::do_day($val, [<day $val>]::day);
+                    })+
+                });
+                println!("Execution took {}ms", duration.as_millis());
             }
         }
     };
 }
 
-pub fn print_entry() {
-    println!(
+pub fn do_day<F, T, T2>(day: usize, fn_day: F)
+where
+    F: Fn(String) -> (T, T2),
+    T: std::fmt::Display,
+    T2: std::fmt::Display,
+{
+    let mut result = None;
+    let input = get_input(day, 2020);
+    let duration = time_duration(|| {
+        result = Some(fn_day(input));
+    });
+
+    if let Some(result) = result {
+        print_result(day, result, duration.as_millis());
+    }
+}
+
+pub fn time_duration<F>(function: F) -> time::Duration
+where
+    F: FnOnce(),
+{
+    let start = time::Instant::now();
+    function();
+    time::Instant::now().duration_since(start)
+}
+
+pub fn print_entry(filter: &Vec<u8>) {
+    print!(
         // Thanks Caspar
         "\t{} {} {} {}",
         "Advent".bright_red().bold(),
@@ -44,6 +61,12 @@ pub fn print_entry() {
         "Code".bright_green().bold(),
         "2020".bright_blue()
     );
+
+    if filter.len() > 0 {
+        println!(" {:?}", filter);
+    } else {
+        println!("")
+    }
 }
 
 pub fn print_result<T, T2>(day: usize, result: (T, T2), time: u128)
