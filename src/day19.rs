@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 type TParsed = (TParsedS1, TParsedS2);
-type TParsedS1 = HashMap<i32, Instruction>;
+type TParsedS1 = HashMap<i32, Rule>;
 type TParsedS2 = Vec<String>;
 
 pub fn day(input: String) -> (i64, i64) {
@@ -9,12 +9,12 @@ pub fn day(input: String) -> (i64, i64) {
     (part_1(&parsed_input), part_2(&parsed_input))
 }
 
-fn part_1((instructions, test): &TParsed) -> i64 {
+fn part_1((rules, to_test): &TParsed) -> i64 {
     let mut acc = 0;
 
-    for case in test {
+    for case in to_test {
         let characters = case.chars().collect::<Vec<_>>();
-        let (result, _, max_pos) = test_case(0, &characters, &instructions[&0], instructions);
+        let (result, _, max_pos) = test_case(0, &characters, &rules[&0], rules);
         acc += (result && max_pos + 1 == characters.len()) as i64;
     }
 
@@ -24,19 +24,19 @@ fn part_1((instructions, test): &TParsed) -> i64 {
 fn test_case(
     pos: usize,
     characters: &Vec<char>,
-    instruction: &Instruction,
-    instructions: &TParsedS1,
+    rule: &Rule,
+    rules: &TParsedS1,
 ) -> (bool, usize, usize) {
-    let result = match instruction {
-        Instruction::Match(c) => (characters[pos] == *c, 1, pos),
-        Instruction::Or(opt1, opt2) => {
-            let opt1 = Instruction::Req(opt1.clone());
-            let res1 = test_case(pos, characters, &opt1, instructions);
+    let result = match rule {
+        Rule::Match(c) => (characters[pos] == *c, 1, pos),
+        Rule::Or(opt1, opt2) => {
+            let opt1 = Rule::Req(opt1.clone());
+            let res1 = test_case(pos, characters, &opt1, rules);
             if res1.0 {
                 res1
             } else {
-                let opt2 = Instruction::Req(opt2.clone());
-                let res2 = test_case(pos, characters, &opt2, instructions);
+                let opt2 = Rule::Req(opt2.clone());
+                let res2 = test_case(pos, characters, &opt2, rules);
                 if res2.0 {
                     res2
                 } else {
@@ -44,19 +44,19 @@ fn test_case(
                 }
             }
         }
-        Instruction::Req(ins) => {
+        Rule::Req(ins) => {
             let mut acc = 0;
-            let mut max_depth = 0;
+            let mut max_pos = 0;
             for i in ins {
-                let instruction = &instructions[i];
-                let res = test_case(pos + acc, characters, instruction, instructions);
+                let rule = &rules[i];
+                let res = test_case(pos + acc, characters, rule, rules);
                 if !res.0 {
                     return (false, 0, 0);
                 }
                 acc += res.1;
-                max_depth = max_depth.max(res.2);
+                max_pos = max_pos.max(res.2);
             }
-            (true, acc, max_depth)
+            (true, acc, max_pos)
         }
     };
 
@@ -68,7 +68,7 @@ fn part_2(_input: &TParsed) -> i64 {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-enum Instruction {
+enum Rule {
     Match(char),
     Or(Vec<i32>, Vec<i32>),
     Req(Vec<i32>),
@@ -121,8 +121,8 @@ aaaabbb";
 fn parse(input: &str) -> TParsed {
     let mut pt1 = true;
 
-    let mut ins = TParsedS1::new();
-    let mut test = TParsedS2::new();
+    let mut rules = TParsedS1::new();
+    let mut to_test = TParsedS2::new();
 
     for line in input.lines() {
         if pt1 {
@@ -133,10 +133,10 @@ fn parse(input: &str) -> TParsed {
 
             let mut split = line.split(':');
             let n = split.next().unwrap().parse::<i32>().unwrap();
-            let instruction = split.next().unwrap();
+            let rule = split.next().unwrap();
 
-            let i = if instruction.contains('|') {
-                let mut or = instruction.split('|');
+            let i = if rule.contains('|') {
+                let mut or = rule.split('|');
 
                 let v1 = or
                     .next()
@@ -151,23 +151,23 @@ fn parse(input: &str) -> TParsed {
                     .filter_map(|s| s.parse::<i32>().ok())
                     .collect::<Vec<_>>();
 
-                Instruction::Or(v1, v2)
-            } else if instruction.contains('\"') {
-                Instruction::Match(instruction.chars().find(|c| c.is_alphabetic()).unwrap())
+                Rule::Or(v1, v2)
+            } else if rule.contains('\"') {
+                Rule::Match(rule.chars().find(|c| c.is_alphabetic()).unwrap())
             } else {
-                let vals = instruction
+                let vals = rule
                     .split_whitespace()
                     .filter_map(|s| s.parse::<i32>().ok())
                     .collect::<Vec<_>>();
 
-                Instruction::Req(vals)
+                Rule::Req(vals)
             };
 
-            ins.insert(n, i);
+            rules.insert(n, i);
         } else {
-            test.push(line.to_owned());
+            to_test.push(line.to_owned());
         }
     }
 
-    (ins, test)
+    (rules, to_test)
 }
