@@ -66,9 +66,9 @@ fn part_2(input: &TParsed, border_to_tiles: HashMap<u16, Vec<usize>>) -> usize {
         }
     }
 
-    for tile in tiles_to_adjacents {
-        println!("{:?}", tile);
-    }
+    // for tile in tiles_to_adjacents {
+    //     println!("{:?}", tile);
+    // }
 
     273
 }
