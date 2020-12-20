@@ -21,6 +21,28 @@ fn part_1((rules, to_test): &TParsed) -> i64 {
     acc
 }
 
+fn part_2((rules, to_test): &TParsed) -> i64 {
+    let mut rules = rules.clone();
+
+    rules
+        .entry(8)
+        .and_modify(|r| *r = Rule::Or(vec![42], vec![42, 8]));
+
+    rules
+        .entry(11)
+        .and_modify(|r| *r = Rule::Or(vec![42, 31], vec![42, 11, 31]));
+
+    let mut acc = 0;
+
+    for case in to_test {
+        let characters = case.chars().collect::<Vec<_>>();
+        let (result, _, max_pos) = test_case(0, &characters, &rules[&0], &rules);
+        acc += (result && max_pos + 1 == characters.len()) as i64;
+    }
+
+    12
+}
+
 fn test_case(
     pos: usize,
     characters: &Vec<char>,
@@ -28,7 +50,14 @@ fn test_case(
     rules: &TParsedS1,
 ) -> (bool, usize, usize) {
     let result = match rule {
-        Rule::Match(c) => (characters[pos] == *c, 1, pos),
+        Rule::Match(c_match) => {
+            let res = if let Some(c_case) = characters.get(pos) {
+                c_match == c_case
+            } else {
+                false
+            };
+            (res, 1, pos)
+        }
         Rule::Or(opt1, opt2) => {
             let opt1 = Rule::Req(opt1.clone());
             let res1 = test_case(pos, characters, &opt1, rules);
@@ -63,10 +92,6 @@ fn test_case(
     result
 }
 
-fn part_2(_input: &TParsed) -> i64 {
-    8
-}
-
 #[derive(Debug, PartialEq, Clone)]
 enum Rule {
     Match(char),
@@ -84,12 +109,13 @@ fn show_parse() {
 fn test_example_1() {
     assert_eq!(part_1(&parse(EX1)), 2);
     assert_eq!(part_1(&parse(EX2)), 2);
+    assert_eq!(part_1(&parse(EX3)), 3);
 }
 
 #[test]
 fn test_example_2() {
-    let input = parse(EX1);
-    assert_eq!(part_2(&input), 8)
+    let input = parse(EX3);
+    assert_eq!(part_2(&input), 12)
 }
 
 #[cfg(test)]
@@ -117,6 +143,56 @@ bababa
 abbbab
 aaabbb
 aaaabbb";
+
+#[cfg(test)]
+const EX3: &str = "\
+42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
 
 fn parse(input: &str) -> TParsed {
     let mut pt1 = true;
