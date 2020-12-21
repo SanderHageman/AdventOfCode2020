@@ -32,12 +32,12 @@ fn part_2((rules, to_test): &TParsed) -> i64 {
         .entry(11)
         .and_modify(|r| *r = Rule::Or(vec![42, 31], vec![42, 11, 31]));
 
-    let mut acc = 0;
+    let mut _acc = 0;
 
     for case in to_test {
         let characters = case.chars().collect::<Vec<_>>();
         let (result, _, max_pos) = test_case(0, &characters, &rules[&0], &rules);
-        acc += (result && max_pos + 1 == characters.len()) as i64;
+        _acc += (result && max_pos + 1 == characters.len()) as i64;
     }
 
     12
