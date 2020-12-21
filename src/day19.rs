@@ -14,7 +14,7 @@ fn part_1((rules, to_test): &TParsed) -> i64 {
 
     for case in to_test {
         let characters = case.chars().collect::<Vec<_>>();
-        let (result, _, max_pos) = test_case(0, &characters, &rules[&0], rules);
+        let (result, _, max_pos) = test_case(0, &characters, &rules[&0], rules, 0);
         acc += (result && max_pos + 1 == characters.len()) as i64;
     }
 
@@ -32,15 +32,21 @@ fn part_2((rules, to_test): &TParsed) -> i64 {
         .entry(11)
         .and_modify(|r| *r = Rule::Or(vec![42, 31], vec![42, 11, 31]));
 
-    let mut _acc = 0;
+    let mut acc = 0;
 
     for case in to_test {
         let characters = case.chars().collect::<Vec<_>>();
-        let (result, _, max_pos) = test_case(0, &characters, &rules[&0], &rules);
-        _acc += (result && max_pos + 1 == characters.len()) as i64;
+
+        for i in 0..characters.len() {
+            let (res, _, max) = test_case(0, &characters, &rules[&0], &rules, i);
+            if res && max + 1 == characters.len() {
+                acc += 1;
+                break;
+            }
+        }
     }
 
-    12
+    acc
 }
 
 fn test_case(
@@ -48,6 +54,7 @@ fn test_case(
     characters: &Vec<char>,
     rule: &Rule,
     rules: &TParsedS1,
+    prefer_opt2_until: usize,
 ) -> (bool, usize, usize) {
     let result = match rule {
         Rule::Match(c_match) => {
@@ -59,13 +66,18 @@ fn test_case(
             (res, 1, pos)
         }
         Rule::Or(opt1, opt2) => {
+            let use_opt2_first = prefer_opt2_until > pos;
+            let carry = opt1;
+            let opt1 = if use_opt2_first { opt2 } else { opt1 };
+            let opt2 = if use_opt2_first { carry } else { opt2 };
+
             let opt1 = Rule::Req(opt1.clone());
-            let res1 = test_case(pos, characters, &opt1, rules);
+            let res1 = test_case(pos, characters, &opt1, rules, prefer_opt2_until);
             if res1.0 {
                 res1
             } else {
                 let opt2 = Rule::Req(opt2.clone());
-                let res2 = test_case(pos, characters, &opt2, rules);
+                let res2 = test_case(pos, characters, &opt2, rules, prefer_opt2_until);
                 if res2.0 {
                     res2
                 } else {
@@ -78,7 +90,7 @@ fn test_case(
             let mut max_pos = 0;
             for i in ins {
                 let rule = &rules[i];
-                let res = test_case(pos + acc, characters, rule, rules);
+                let res = test_case(pos + acc, characters, rule, rules, prefer_opt2_until);
                 if !res.0 {
                     return (false, 0, 0);
                 }
