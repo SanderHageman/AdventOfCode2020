@@ -1,9 +1,9 @@
 type TParsed = Vec<TParsedSub>;
 type TParsedSub = usize;
 
-pub fn day(input: String) -> (usize, usize) {
+pub fn day(input: String) -> (usize, &'static str) {
     let parsed_input = parse(&input);
-    (part_1(&parsed_input), part_2(&parsed_input))
+    (part_1(&parsed_input), "The End!")
 }
 
 fn part_1(input: &TParsed) -> usize {
@@ -29,10 +29,6 @@ fn part_1(input: &TParsed) -> usize {
     value
 }
 
-fn part_2(_input: &TParsed) -> usize {
-    0
-}
-
 #[test]
 fn show_parse() {
     let input = parse(EXAMPLE_INPUT);
@@ -43,12 +39,6 @@ fn show_parse() {
 fn test_example_1() {
     let input = parse(EXAMPLE_INPUT);
     assert_eq!(part_1(&input), 14897079)
-}
-
-#[test]
-fn test_example_2() {
-    let input = parse(EXAMPLE_INPUT);
-    assert_eq!(part_1(&input), 10)
 }
 
 fn parse(input: &str) -> TParsed {
