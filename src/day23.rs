@@ -61,8 +61,56 @@ fn part_1(input: &TParsed) -> usize {
     result
 }
 
-fn part_2(_input: &TParsed) -> usize {
-    149245887792
+fn part_2(input: &TParsed) -> usize {
+    let cups = input
+        .iter()
+        .map(|&x| x as usize)
+        .chain(10..1_000_001)
+        .collect::<Vec<_>>();
+
+    let len = cups.len();
+    let get_i = |i: usize| i % len;
+
+    let max = *cups.iter().max().unwrap();
+    let mut indices = vec![0; max + 1];
+
+    for i in 0..len {
+        indices[cups[i]] = cups[get_i(i + 1)]
+    }
+
+    let mut cup = cups[0];
+
+    for _ in 0..10_000_000 {
+        let pick_up = [
+            indices[cup],
+            indices[indices[cup]],
+            indices[indices[indices[cup]]],
+        ];
+
+        indices[cup] = indices[pick_up[2]];
+
+        let destination = {
+            let mut result = 0;
+            for j in (1..cup).rev().chain((cup + 1..max + 1).rev()) {
+                if j != pick_up[0] && j != pick_up[1] && j != pick_up[2] {
+                    result = j;
+                    break;
+                }
+            }
+            result
+        };
+
+        let next = indices[destination];
+
+        for i in 0..4 {
+            let target = if i == 0 { destination } else { pick_up[i - 1] };
+            indices[target] = if i < 3 { pick_up[i] } else { next };
+        }
+
+        cup = indices[cup];
+    }
+
+    indices[1] * indices[indices[1]]
 }
 
 fn parse(input: &str) -> TParsed {
